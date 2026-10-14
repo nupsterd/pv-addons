@@ -1,0 +1,44 @@
+name: Hikvision ISAPI Listener
+version: "1.2.0"
+slug: hikvision_isapi_listener
+description: >
+  Listener del Event Stream ISAPI de controladores de acceso Hikvision.
+  Audita todos los eventos en JSON Lines local, reenvía eventos relevantes
+  a un webhook de Home Assistant, y opcionalmente hace fan-out al
+  backend pv-backend.
+image: "ghcr.io/nupsterd/{arch}-hikvision-isapi-listener"
+
+arch:
+  - aarch64
+
+startup: services
+boot: auto
+init: false
+
+options:
+  controller_host: ""
+  controller_user: "admin"
+  controller_password: ""
+  ha_webhook_url: "http://127.0.0.1:9999/unused"
+  audit_log_path: "/config/audit.log"
+  reconnect_delay: 5
+  pv_backend_url: ""
+  pv_backend_verify_token: ""
+  pv_backend_queue_maxsize: 1000
+  pv_backend_timeout_seconds: 3
+
+schema:
+  controller_host: str
+  controller_user: str
+  controller_password: password
+  ha_webhook_url: url
+  audit_log_path: str
+  reconnect_delay: int(1,300)
+  pv_backend_url: "str?"
+  pv_backend_verify_token: "password?"
+  pv_backend_queue_maxsize: "int(10,100000)"
+  pv_backend_timeout_seconds: "int(1,30)"
+
+map:
+  - data:rw
+  - addon_config:rw
