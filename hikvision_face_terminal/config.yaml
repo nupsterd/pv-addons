@@ -1,5 +1,5 @@
 name: Hikvision Face Terminal Listener
-version: "1.1.0-alpha"
+version: "1.2.0"
 slug: hikvision_face_terminal
 description: >
   Listener del Event Stream ISAPI del terminal biométrico peatonal Hikvision
