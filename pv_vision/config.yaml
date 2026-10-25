@@ -1,12 +1,12 @@
 name: "Visión (Portería Virtual)"
-version: "0.3.1-alpha"
+version: "0.4.0-alpha"
 slug: pv_vision
 description: >
-  Graba el stream RTSP de una cámara (Dahua) en ventanas horarias de días
-  hábiles, sin recodificar, en segmentos MP4 fragmentados en /media/pv_vision/,
-  con retención máxima de 30 días. Detector de personas + conteo de línea en
-  sombra, sobre archivos o en vivo (los dos apagados por defecto). No envía
-  nada fuera de la Pi.
+  Detector de personas + conteo de línea de una cámara RTSP (Dahua), en vivo
+  24/7 o sobre archivos. Manda al backend de Portería Virtual solo los cruces
+  y un latido (sin imágenes). Grabador opcional, sin recodificar, en
+  /media/pv_vision/ (apagado, por ventanas horarias o solo los segmentos con
+  salidas del vivo), con retención máxima de 30 días. El video no sale de la Pi.
 image: "ghcr.io/nupsterd/{arch}-pv-vision"
 
 arch:
@@ -16,6 +16,7 @@ startup: services
 boot: auto
 init: false
 hassio_api: true
+tmpfs: true
 
 options:
   camera_host: ""
@@ -32,6 +33,7 @@ options:
   min_free_gb: 10
   tz: "America/Bogota"
   log_level: "info"
+  grabador: "apagado"
   analisis_activo: false
   analisis_dir: "/media/pv_vision/conjunto_b"
   analisis_modelos:
@@ -54,6 +56,14 @@ options:
   rebote: "ninguno"
   vivo_activo: false
   vivo_sin_cuadros_s: 15
+  vivo_retencion_dias: 30
+  backend_url: ""
+  backend_secret: ""
+  device_serial: ""
+  backend_timeout_seconds: 5
+  heartbeat_interval_minutes: 15
+  outbox_max_records: 100000
+  outbox_max_age_days: 7
 
 schema:
   camera_host: str
@@ -69,10 +79,11 @@ schema:
   min_free_gb: int(1,1000)
   tz: str
   log_level: list(debug|info|warning)
+  grabador: list(apagado|ventanas|por_cruce)
   analisis_activo: bool
   analisis_dir: str
   analisis_modelos:
-    - list(yolox_nano|yolox_tiny|yolox_s|rfdetr_nano|rfdetr_nano_int8|rfdetr_small)
+    - list(yolox_nano|yolox_tiny|yolox_s)
   analisis_cada_n: int(1,25)
   analisis_hilos: int(1,3)
   analisis_solo_fuera_de_ventanas: bool
@@ -92,6 +103,14 @@ schema:
   rebote: list(ninguno|neto_por_track)
   vivo_activo: bool
   vivo_sin_cuadros_s: int(5,120)
+  vivo_retencion_dias: int(1,90)
+  backend_url: "str?"
+  backend_secret: "password?"
+  device_serial: "str?"
+  backend_timeout_seconds: int(1,30)
+  heartbeat_interval_minutes: int(1,60)
+  outbox_max_records: int(1000,1000000)
+  outbox_max_age_days: int(1,30)
 
 map:
   - addon_config:rw
