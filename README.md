@@ -6,4 +6,4 @@ Repositorio de add-ons de Home Assistant de Portería Virtual. Solo contiene las
 - `hikvision_face_terminal`: eventos de un terminal facial Hikvision DS-K1T344.
 - `dahua_ivs`: cruces de línea (IVS) de una cámara Dahua WizMind.
 - `hikvision_isapi_listener`: eventos de una controladora de acceso Hikvision.
-- `pv_vision`: grabación por ventanas y detector de personas en sombra de una cámara RTSP.
+- `pv_vision`: detector de personas y conteo de línea de una cámara RTSP, con grabador opcional.
