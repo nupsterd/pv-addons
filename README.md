@@ -7,3 +7,4 @@ Repositorio de add-ons de Home Assistant de Portería Virtual. Solo contiene las
 - `dahua_ivs`: cruces de línea (IVS) de una cámara Dahua WizMind.
 - `hikvision_isapi_listener`: eventos de una controladora de acceso Hikvision.
 - `pv_vision`: detector de personas y conteo de línea de una cámara RTSP, con grabador opcional.
+- `hikvision_dvr_salud`: salud del video de un DVR Hikvision (señal, grabación, disco y hora), solo lectura.
