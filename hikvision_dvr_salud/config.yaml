@@ -1,5 +1,5 @@
 name: "Salud del DVR Hikvision (Portería Virtual)"
-version: "0.2.0-alpha"
+version: "0.2.1-alpha"
 slug: hikvision_dvr_salud
 description: >
   Lee por ISAPI, con un usuario de solo lectura y a lo sumo una consulta por
