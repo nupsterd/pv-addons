@@ -1,12 +1,14 @@
 name: "Salud del DVR Hikvision (Portería Virtual)"
-version: "0.2.1-alpha"
+version: "0.3.0-alpha"
 slug: hikvision_dvr_salud
 description: >
   Lee por ISAPI, con un usuario de solo lectura y a lo sumo una consulta por
   minuto, la señal, la grabación, el disco, la hora y el registro de excepciones
   de un DVR Hikvision. Reporta un latido y cada cambio de señal al backend con una
   cola persistente. Con verificacion_video prendida, además baja por RTSP tramos
-  de grabación solo para la verificación de puertas forzadas y los sube al backend.
+  de grabación solo para la verificación de puertas forzadas y los sube al backend:
+  primero los 2 s de la apertura de una forzada en vivo (fotos rápidas, en una
+  ranura extra con prioridad) y después los clips de 30 s.
 
 image: "ghcr.io/nupsterd/{arch}-hikvision-dvr-salud"
 
@@ -30,7 +32,7 @@ options:
   device_serial: ""
   backend_url: ""
   backend_secret: ""
-  canales_excluidos: []
+  excluir_canales: ""
   desfase_max_s: 60
   latido_minutos: 5
   log_level: "info"
@@ -43,8 +45,7 @@ schema:
   device_serial: str
   backend_url: "str?"
   backend_secret: "password?"
-  canales_excluidos:
-    - int(1,)
+  excluir_canales: "str?"
   desfase_max_s: int(10,600)
   latido_minutos: int(5,15)
   log_level: list(debug|info|warning)
