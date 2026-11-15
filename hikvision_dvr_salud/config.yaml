@@ -1,5 +1,5 @@
 name: "Salud del DVR Hikvision (Portería Virtual)"
-version: "0.3.0-alpha"
+version: "0.4.0-alpha"
 slug: hikvision_dvr_salud
 description: >
   Lee por ISAPI, con un usuario de solo lectura y a lo sumo una consulta por
@@ -8,7 +8,11 @@ description: >
   cola persistente. Con verificacion_video prendida, además baja por RTSP tramos
   de grabación solo para la verificación de puertas forzadas y los sube al backend:
   primero los 2 s de la apertura de una forzada en vivo (fotos rápidas, en una
-  ranura extra con prioridad) y después los clips de 30 s.
+  ranura extra con prioridad) y después los clips de 30 s. Con ronda_virtual
+  prendida, además pide por HTTP la foto de un canal por vez (única excepción a la
+  lista blanca: GET /ISAPI/Streaming/channels/<canal>01/picture, sin query string,
+  dentro del mismo cupo de una consulta por minuto), la analiza en la Pi y manda
+  solo números al backend: la foto nunca sale de la Pi.
 
 image: "ghcr.io/nupsterd/{arch}-hikvision-dvr-salud"
 
@@ -22,7 +26,7 @@ boot: manual
 init: false
 # GET /host/info (dt_synchronized) para no fechar registros con el reloj sin NTP.
 hassio_api: true
-# /tmp en RAM: la clave del RTSP y los clips nunca tocan el disco.
+# /tmp en RAM: la clave del RTSP, los clips y las fotos de la ronda nunca tocan el disco.
 tmpfs: true
 
 options:
@@ -37,6 +41,9 @@ options:
   latido_minutos: 5
   log_level: "info"
   verificacion_video: false
+  ronda_virtual: false
+  ronda_banda_superior_px: 56
+  ronda_banda_inferior_px: 72
 
 schema:
   dvr_host: str
@@ -50,6 +57,9 @@ schema:
   latido_minutos: int(5,15)
   log_level: list(debug|info|warning)
   verificacion_video: bool
+  ronda_virtual: bool
+  ronda_banda_superior_px: int(0,200)
+  ronda_banda_inferior_px: int(0,200)
 
 map:
   - addon_config:rw    # /config -> /addon_configs/<slug>/ (auditoría visible desde el add-on SSH)
