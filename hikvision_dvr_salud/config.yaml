@@ -1,18 +1,21 @@
 name: "Salud del DVR Hikvision (Portería Virtual)"
-version: "0.4.1-alpha"
+version: "0.5.0-alpha"
 slug: hikvision_dvr_salud
 description: >
   Lee por ISAPI, con un usuario de solo lectura y a lo sumo una consulta por
   minuto, la señal, la grabación, el disco, la hora y el registro de excepciones
   de un DVR Hikvision. Reporta un latido y cada cambio de señal al backend con una
   cola persistente. Con verificacion_video prendida, además baja por RTSP tramos
-  de grabación solo para la verificación de puertas forzadas y los sube al backend:
+  de grabación para la verificación de puertas forzadas y los sube al backend:
   primero los 2 s de la apertura de una forzada en vivo (fotos rápidas, en una
   ranura extra con prioridad) y después los clips de 30 s. Con ronda_virtual
   prendida, además pide por HTTP la foto de un canal por vez (única excepción a la
   lista blanca: GET /ISAPI/Streaming/channels/<canal>01/picture, sin query string,
   dentro del mismo cupo de una consulta por minuto), la analiza en la Pi y manda
-  solo números al backend: la foto nunca sale de la Pi.
+  solo números al backend: la foto nunca sale de la Pi. Con eventos_nocturnos
+  prendida (necesita verificacion_video), lee el registro Alarm del DVR en una
+  ranura extra por ciclo y baja por RTSP los tramos de 2 s de los eventos
+  nocturnos y del sabotaje que pide el backend, solo para nuestro panel.
 
 image: "ghcr.io/nupsterd/{arch}-hikvision-dvr-salud"
 
@@ -20,13 +23,13 @@ arch:
   - aarch64
 
 startup: services
-# Manual a propósito: un add-on con la clave vacía y arranque automático puede bloquear
-# la cuenta del equipo. Se pasa a auto después del primer arranque correcto.
+# Manual a propósito: un add-on con la clave vacía y arranque automático ya bloqueó
+# una cuenta (§5.9.574). Se pasa a auto en la Pi después del primer arranque correcto.
 boot: manual
 init: false
 # GET /host/info (dt_synchronized) para no fechar registros con el reloj sin NTP.
 hassio_api: true
-# /tmp en RAM: la clave del RTSP, los clips y las fotos de la ronda nunca tocan el disco.
+# /tmp en RAM: la clave del RTSP (archivo ffconcat), los clips y las fotos de la ronda nunca tocan el disco.
 tmpfs: true
 
 options:
@@ -44,6 +47,7 @@ options:
   ronda_virtual: false
   ronda_banda_superior_px: 56
   ronda_banda_inferior_px: 72
+  eventos_nocturnos: false
 
 schema:
   dvr_host: str
@@ -60,6 +64,7 @@ schema:
   ronda_virtual: bool
   ronda_banda_superior_px: int(0,200)
   ronda_banda_inferior_px: int(0,200)
+  eventos_nocturnos: bool
 
 map:
   - addon_config:rw    # /config -> /addon_configs/<slug>/ (auditoría visible desde el add-on SSH)
